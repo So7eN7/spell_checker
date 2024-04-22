@@ -57,7 +57,8 @@ class Window():
             self.highlight_color = h_color[1]        
         
         def grammar_check():
-            print(grammar.gf.correct(self.content))
+            sentence = self.text.get('1.0', tk.END)
+            print(grammar.gf.correct(sentence))
         
         #def line_inc(event):
         #self.line = self.line + 1
