@@ -1,3 +1,4 @@
+from typing import List
 import tkinter as tk
 from tkinter import colorchooser as cc
 from tkinter.scrolledtext import ScrolledText
@@ -24,6 +25,7 @@ class Window():
         self.text.pack()
         self.old_spaces = 0
         self.grammar = ''
+        self.replace = False
         #self.line = 1 
         self.highlight_color = 'red'
         #self.new_win = tk.Toplevel(self.root)
@@ -46,6 +48,7 @@ class Window():
         self.other_menu.add_command(label="Grammar check", command=self.grammar_check)
         self.other_menu.add_separator()
         self.other_menu.add_command(label='Picture analysis', command=self.picture_catch)
+        self.other_menu.add_command(label='Replace mistake', command=self.replace_mistake)
         
         self.test_menu = tk.Menu(self.menubar, tearoff=0)
         self.menubar.add_cascade(label='words', menu=self.test_menu)
@@ -57,7 +60,8 @@ class Window():
 
     #self.root.bind('<return>', line_inc)
         self.root.bind('<Control-n>', self.new_window)
-        #self.root.bind('<Control-r>', new_label_word)
+        self.root.bind('<Control-b>', self.replace_mistake)
+        # self.root.bind('<Control-r>', new_label_word)
         self.root.mainloop()
 
     def new_window(self, event):
@@ -103,7 +107,7 @@ class Window():
         if file:
                 self.text.insert('1.0', picture_analysis.analyze(os.path.basename(file)))
 
-    def add_word():
+    def add_word(self):
         win_word = tk.Toplevel(self.root)
         win_word.geometry("343x117")
         tk.Label(win_word, text='Please enter the word:').pack()
@@ -116,12 +120,10 @@ class Window():
         tk.Button(win_word, text='Update', command=update).pack() 
         box.pack()
 
-    def sort_words():
-        with open('Dictionary.txt', 'r') as f:
-            names = [line.strip() for line in f.readlines()]
-        names.sort()
+    def sort_words(self):
+       os.system('cat Dictionary.txt | sort > Dictionary') 
 
-    def delete_word():
+    def delete_word(self):
         pass
         # #     win_word = tk.Toplevel(self.root)
         # #     win_word.geometry("343x117")
@@ -135,39 +137,55 @@ class Window():
         # #     #       f.replace()
         #
 
-            
-    
+      
     def check(self, event):
        
         #if event.keycode != 65:
         #   return
 
         word_line = self.text.index(tk.INSERT).split('.')[0]
-        lines = []
+        lines: List[str] = []
         if int(word_line) == 1:
             lines = ['1', '2']
         else:
             for i in range(int(word_line)-1, int(word_line)+2):
-                print(i)
                 lines.append(str(i))
+
         for word_line in lines:
-            self.content = self.text.get(f'{word_line}.0', f'{word_line}.end')
+            content = self.text.get(f'{word_line}.0', f'{word_line}.end')
             for tag in self.text.tag_names():
                 if not tag.endswith(word_line):
                     continue
                 self.text.tag_delete(tag)
 
             word_start = 0
-            for word in self.content.split():
+            for word in content.split():
                 if word not in all_words:
-                    print(rectify(word))
+                    correct_word = rectify(word)
+                    print(correct_word)
                     #print(spell_check_fa.rectify(word))
-                    self.incorrect_word = rectify(word)
+                    self.incorrect_word = correct_word
                     self.line = word_line
                     print(word_line)
                     self.text.tag_add(word+word_line, f"{word_line}.{word_start}", f"{word_line}.{word_start+len(word)}")
                     self.text.tag_config(word+word_line, foreground=self.highlight_color)
+                    if self.replace == True:
+                        self.text.delete(f"{word_line}.{word_start}", f"{word_line}.{word_start+len(word)}")
+                        self.text.insert(f"{word_line}.{word_start}", correct_word)
+                        self.replace = False
+                        if correct_word:
+                            word = correct_word
+
                 word_start += len(word) + 1
+
+    
+    def replace_mistake(self, event=None):
+        self.replace = True
+        self.check(event)
+        # self.text.delete(tk.INSERT)
+        # self.text.insert(tk.INSERT, correct_word)
+        # self.rep_list.pop()
+
 
 
 
