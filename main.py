@@ -63,6 +63,8 @@ class Window():
     #self.root.bind('<return>', line_inc)
         self.root.bind('<Control-n>', self.new_window)
         self.root.bind('<Control-b>', self.replace_mistake)
+        self.root.bind('<Control-r>', self.suggest_words)
+        
         # self.root.bind('<Control-r>', new_label_word)
         self.root.mainloop()
 
@@ -110,7 +112,7 @@ class Window():
         if file:
                 self.text.insert('1.0', picture_analysis.analyze(os.path.basename(file)))
     
-    def suggest_words(self):
+    def suggest_words(self, event):
         print(self.suggest_word)
 
             
