@@ -4,7 +4,7 @@ from tkinter import colorchooser as cc
 from tkinter.scrolledtext import ScrolledText
 import tkinter.filedialog as fd
 import re
-from spell_check import rectify, all_words
+from spell_check import rectify, all_words, suggestion
 import spell_check_fa
 import grammar
 import picture_analysis
@@ -56,6 +56,8 @@ class Window():
         self.test_menu.add_command(label='delete word', command=self.delete_word)
         self.test_menu.add_separator()
         self.test_menu.add_command(label='sort_words', command=self.sort_words)
+        self.test_menu.add_separator()
+        self.test_menu.add_command(label='suggestion', command=self.suggest_words)
         #self.test_menu.add_command(label='test', command=new_label_word)
 
     #self.root.bind('<return>', line_inc)
@@ -69,6 +71,7 @@ class Window():
         win_guess.geometry("343x343")
         tk.Label(win_guess, text=f'{self.incorrect_word} at line:{self.line}').pack()
         tk.Label(win_guess, text=f'{self.grammar} at line {self.line}').pack()
+        tk.Label(win_guess, text=f'{self.suggest_word} at line {self.line}').pack()
             
     # def new_label_word(event):
     #tk.Label(self.new_win, text=f'{self.incorrect_word}').pack()
@@ -106,7 +109,11 @@ class Window():
         file = fd.askopenfilename(defaultextension='.png' ,filetypes=[('PNG files', '*.png*')])
         if file:
                 self.text.insert('1.0', picture_analysis.analyze(os.path.basename(file)))
+    
+    def suggest_words(self):
+        print(self.suggest_word)
 
+            
     def add_word(self):
         win_word = tk.Toplevel(self.root)
         win_word.geometry("343x117")
@@ -162,6 +169,7 @@ class Window():
             for word in content.split():
                 if word not in all_words:
                     correct_word = rectify(word)
+                    self.suggest_word = suggestion(word)
                     print(correct_word)
                     #print(spell_check_fa.rectify(word))
                     self.incorrect_word = correct_word

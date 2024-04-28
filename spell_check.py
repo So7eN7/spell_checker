@@ -32,3 +32,5 @@ def rectify(word):
     correct_word = max(possible_corrections(word), key=prob)
     return correct_word
 
+def suggestion(word):
+    return sorted(possible_corrections(word), key=prob, reverse=True)
